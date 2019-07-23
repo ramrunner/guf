@@ -10,7 +10,7 @@ Before any Union() operations each set element belongs to its own set.
 
 ## Usage
 
-```
+```go
 package main
 
 import (
