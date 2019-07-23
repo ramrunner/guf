@@ -1,4 +1,4 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/ramrunner/guf](https://goreportcard.com/report/github.com/ramrunner/guf)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ramrunner/guf)](https://goreportcard.com/report/github.com/ramrunner/guf)
 [![GoDoc](https://godoc.org/github.com/ramrunner/guf?status.svg)](https://godoc.org/github.com/ramrunner/guf)
 
 ## Golang Union Find (GUF)
