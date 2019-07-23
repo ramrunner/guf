@@ -14,8 +14,9 @@ Before any Union() operations each set element belongs to its own set.
 package main
 
 import (
-        "github.com/ramrunner/guf"
         "fmt"
+
+        "github.com/ramrunner/guf"
 )
 
 var (
@@ -37,11 +38,12 @@ func elemFromString(a string) *guf.SetElem {
 // registerMap is a helper function will register as many new SetElements with the guf
 // and keep track of the association with the user provided data in the
 // map.
-func registerMap(g guf.Guf, strs []string) {
-        for i := range strElems {
-                e = g.RegisterNew()
-                e.SetData(strElems[i])
-                elemMap[strElems[i]] = e
+func registerMap(g *guf.Guf, strs []string) {
+        elemMap = make(map[string]*guf.SetElem)
+        for i := range strs {
+                e := g.RegisterNew()
+                e.SetData(strs[i])
+                elemMap[strs[i]] = e
         }
 }
 
@@ -65,8 +67,7 @@ func main() {
         fmt.Printf("parent of \"its\": %+v\n", itsp)
         // union "its" with "string"
         g.Union(elemFromString("its"), elemFromString("string"))
-        itsp := g.Find(elemFromString("its"))
+        itsp = g.Find(elemFromString("its"))
         fmt.Printf("parent of \"its\": %+v\n", itsp)
 }
-
 ```
