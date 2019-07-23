@@ -1,3 +1,6 @@
+// GUF provides a golang union find implementation that can track the connectivity
+// of different elements in sets. It provides a way to the user to associate data
+// with the set identifiers that GUF is using internally.
 package guf
 
 // SetElem represents a node in the forest of sets
@@ -28,10 +31,10 @@ func (t *SetElem) ID() int {
 // it's children and selecting the maximum.
 func (t *SetElem) calcHeight() int {
 	cheights := []int{}
-	//if we have no children nodes we at the bottom of the tree.
-	//in that case cheights will be empty and maxIntSlice will return
-	//-1 which is the appropriate height for that case. Adding one
-	//to that, would bring our height to 0.
+	// if we have no children nodes we at the bottom of the tree.
+	// in that case cheights will be empty and maxIntSlice will return
+	// -1 which is the appropriate height for that case. Adding one
+	// to that, would bring our height to 0.
 	for _, v := range t.children {
 		cheights = append(cheights, v.calcHeight())
 	}
@@ -48,8 +51,8 @@ func (t *SetElem) calcSize() int {
 }
 
 func (t *SetElem) setParent(p *SetElem) {
-	//we're already registered as a child of another parent.
-	//go there and clear our reference from the children map.
+	// we're already registered as a child of another parent.
+	// go there and clear our reference from the children map.
 	if t.parent != nil {
 		t.parent.removeChild(t)
 	}
@@ -58,20 +61,20 @@ func (t *SetElem) setParent(p *SetElem) {
 }
 
 func (t *SetElem) setChild(c *SetElem) {
-	//update our size
+	// update our size
 	t.size += c.size
-	//update our parents
+	// update our parents
 	p := t.parent
 	for p != nil {
 		p.size += c.size
 		p = p.parent
 	}
 
-	//update our height if it now smaller
-	//than 1+child height
+	// update our height if it now smaller
+	// than 1+child height
 	if t.height-1 < c.height {
 		t.height = 1 + c.height
-		//propagate that up to our parents
+		// propagate that up to our parents
 		updateHeightUp(t)
 	}
 
@@ -163,18 +166,18 @@ func (g *Guf) Union(a, b *SetElem) {
 func (g *Guf) unionByHeight(a, b, pa, pb *SetElem) {
 	ha, hb := a.height, b.height
 	if ha <= hb {
-		a.setParent(pb)
+		pa.setParent(pb)
 	} else {
-		b.setParent(pa)
+		pb.setParent(pa)
 	}
 }
 
 func (g *Guf) unionBySize(a, b, pa, pb *SetElem) {
 	sa, sb := a.size, b.size
 	if sa <= sb {
-		a.setParent(pb)
+		pa.setParent(pb)
 	} else {
-		b.setParent(pa)
+		pb.setParent(pa)
 	}
 }
 
