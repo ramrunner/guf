@@ -1,7 +1,12 @@
-// GUF provides a golang union find implementation that can track the connectivity
+// Package guf provides a golang union find implementation that can track the connectivity
 // of different elements in sets. It provides a way to the user to associate data
 // with the set identifiers that GUF is using internally.
 package guf
+
+import (
+	"fmt"
+	"strings"
+)
 
 // SetElem represents a node in the forest of sets
 // that can also hold a reference to user provided data.
@@ -20,6 +25,38 @@ type SetElem struct {
 func (t *SetElem) SetData(d interface{}) int {
 	t.data = d
 	return t.id
+}
+
+// Data returns back the reference to the stored data
+// in this set element. The caller is responsible for the correct
+// casting of the interface value to the appropriate type.
+func (t *SetElem) Data() interface{} {
+	return t.data
+}
+
+func (t *SetElem) String() string {
+	var (
+		sb, csb          strings.Builder
+		pstring, dstring string
+	)
+
+	if t.parent == nil {
+		pstring = "nil"
+	} else {
+		pstring = fmt.Sprintf("%d", t.parent.id)
+	}
+	if t.data == nil {
+		dstring = "no"
+	} else {
+		dstring = "yes"
+	}
+	csb.WriteString("[")
+	for _, v := range t.children {
+		fmt.Fprintf(&csb, " id:%d ", v.id)
+	}
+	csb.WriteString("]")
+	fmt.Fprintf(&sb, "parent:%s,id:%d,height:%d,size:%d,children:%s,data:%s", pstring, t.id, t.height, t.size, csb.String(), dstring)
+	return sb.String()
 }
 
 // ID returns the id of a register set.
@@ -147,7 +184,7 @@ func (g *Guf) RegisterNew() *SetElem {
 		parent:   nil,
 		id:       g.maxElem,
 		height:   0,
-		size:     0,
+		size:     1,
 		children: make(map[int]*SetElem),
 	}
 	g.maxElem++
