@@ -34,6 +34,9 @@ func (t *SetElem) Data() interface{} {
 	return t.data
 }
 
+// String returns a comma separated representation of the element.
+// If data is populated, it doesn't try to access it, just prints if
+// the value is set.
 func (t *SetElem) String() string {
 	var (
 		sb, csb          strings.Builder
@@ -57,6 +60,24 @@ func (t *SetElem) String() string {
 	csb.WriteString("]")
 	fmt.Fprintf(&sb, "parent:%s,id:%d,height:%d,size:%d,children:%s,data:%s", pstring, t.id, t.height, t.size, csb.String(), dstring)
 	return sb.String()
+}
+
+// AllInSet traverses the tree up to the parent and then performs a depth first search
+// returning all associated elements in the set.
+func (t *SetElem) AllInSet() []*SetElem {
+	p := traverseUp(t)
+	return dfs(p)
+}
+
+// dfs performs a simple depth first search to return all elements
+// under a parent.
+func dfs(a *SetElem) []*SetElem {
+	ret := []*SetElem(nil)
+	for _, v := range a.children {
+		ret = append(ret, dfs(v)...)
+	}
+	ret = append(ret, a)
+	return ret
 }
 
 // ID returns the id of a register set.
@@ -221,6 +242,10 @@ func (g *Guf) unionBySize(a, b, pa, pb *SetElem) {
 // Find returns the parent SetElement of the whole set that it's
 // argument belongs in.
 func (g *Guf) Find(a *SetElem) *SetElem {
+	return traverseUp(a)
+}
+
+func traverseUp(a *SetElem) *SetElem {
 	p := a.parent
 	curr := a
 	for p != nil {
