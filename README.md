@@ -4,11 +4,27 @@
 ## Golang Union Find (GUF)
 
 guf is a library that provides connected component functionality for GO projects.
-It maintains a forest of set elements and connects them throught Union() operations.
-Find() operations return the parent element of the whole set.
-Before any Union() operations each set element belongs to its own set.
+It maintains a forest of set elements and connects them throught *Union()* operations.
+*Find()* operations return the parent element of the whole set.
+
+Before any *Union()* operations each set element belongs to its own set.
+
+It also provides two functions: *Data()* and *SetData()* for the user to possibly
+associate and retrieve data to/from set elements.
 
 ## Usage
+
+Create a new guf, register a couple of set elements, connect them and see that they
+have the same parent. A default guf unions elements by height.
+
+```go
+	g := guf.NewGuf()
+	e1,e2 := g.RegisterNew(), g.RegisterNew()
+	g.Union(e1,e2)
+	setParent := g.Find(e2)
+```
+
+Or an full example that shows how to associate external data with the sets
 
 ```go
 package main
@@ -35,6 +51,12 @@ func elemFromString(a string) *guf.SetElem {
         return nil
 }
 
+// stringFromElem is a helper that expects the saved data in a SetElem to be
+// of the string type.
+func stringFromElem(a *guf.SetElem) string {
+	return a.Data().(string)
+}
+
 // registerMap is a helper function will register as many new SetElements with the guf
 // and keep track of the association with the user provided data in the
 // map.
@@ -46,28 +68,29 @@ func registerMap(g *guf.Guf, strs []string) {
                 elemMap[strs[i]] = e
         }
 }
-
 func main() {
         strElems := []string{"each", "string", "starts", "as", "its", "own", "set"}
         // create a new guf instance
         g := guf.NewGuf()
-        //register the strings and populate the map
+        // instruct the guf to union by size
+        g.SetUnionBySize()
+        // register the strings and populate the map
         registerMap(g, strElems)
-        // union "each" with "string"
+        fmt.Println("union 'each' with 'string'")
         g.Union(elemFromString("each"), elemFromString("string"))
-        // union "starts" with "as"
+        fmt.Println("union 'starts' with 'as'")
         g.Union(elemFromString("starts"), elemFromString("as"))
-        // union "as" with "its"
+        fmt.Println("union 'as' with 'its'")
         g.Union(elemFromString("as"), elemFromString("its"))
-        // find parent of "string"
+        fmt.Println("finding parent of 'string'")
         stringp := g.Find(elemFromString("string"))
-        // find  parent of "its"
+        fmt.Println("finding  parent of 'its'")
         itsp := g.Find(elemFromString("its"))
-        fmt.Printf("parent of \"string\": %+v\n", stringp)
-        fmt.Printf("parent of \"its\": %+v\n", itsp)
-        // union "its" with "string"
+        fmt.Printf("parent of %s: %s\n", stringFromElem(stringp), stringp)
+        fmt.Printf("parent of %s: %s\n", stringFromElem(itsp), itsp)
+        fmt.Println("union 'its' with 'string'")
         g.Union(elemFromString("its"), elemFromString("string"))
         itsp = g.Find(elemFromString("its"))
-        fmt.Printf("parent of \"its\": %+v\n", itsp)
+        fmt.Printf("parent of %s: %s\n", stringFromElem(itsp), itsp)
 }
 ```
